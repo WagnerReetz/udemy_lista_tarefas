@@ -5,7 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:lista_tarefas/data_json.dart';
 
 class SecondRoute extends StatefulWidget {
-  int _indexFather;
+  final int _indexFather;
 
   @override
   _SecondRouteState createState() => _SecondRouteState(_indexFather);

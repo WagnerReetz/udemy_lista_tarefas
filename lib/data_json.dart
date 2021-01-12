@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:path_provider/path_provider.dart';
 
@@ -44,23 +43,38 @@ class ControllerDataJson {
     }
   }
 
+  List decodeJson(value) {
+    try {
+      if (value.isNotEmpty) {
+        _toDoList = json.decode(value);
+      }
+
+      return _toDoList;
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<List> readDataAndDecodeJson() async {
     try {
       readData().then((value) {
-        _toDoList = json.decode(value);
+        if (value.isNotEmpty) {
+          _toDoList = json.decode(value);
+        }
+
         return _toDoList;
       });
     } catch (e) {
       return null;
     }
+
+    return null;
   }
 
   List get toDoList => _toDoList;
 
   List getSubList(int index, String key, List lista) {
     List ret = lista[index][key];
-
-    print(ret);
 
     if (ret == null) {
       ret = List();

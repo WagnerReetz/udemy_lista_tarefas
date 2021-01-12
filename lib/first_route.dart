@@ -22,9 +22,11 @@ class _FirstRouteState extends State<FirstRoute> {
   void initState() {
     super.initState();
 
-    setState(() {
-      _controllerDataJson.readDataAndDecodeJson();
-    });
+    _controllerDataJson.readData().then((value) => {
+          setState(() {
+            _controllerDataJson.decodeJson(value);
+          })
+        });
   }
 
   Future<Null> _refresh() async {
@@ -154,17 +156,47 @@ class _FirstRouteState extends State<FirstRoute> {
         child: _buildLine(index));
   }
 
+  Widget _buildSubTitle(int index) {
+    final _toDoListSec = _controllerDataJson.getSubList(
+        index, 'itens', _controllerDataJson.toDoList);
+
+    Map<String, dynamic> info = getInfoItensLista(_toDoListSec);
+
+    return Text(
+        "Itens: ${info['qtd']} | Pendente: ${info['done']} | Concluído: ${info['open']}");
+  }
+
+  Map<String, dynamic> getInfoItensLista(List lista) {
+    Map<String, dynamic> info = Map();
+
+    info['qtd'] = lista.length;
+
+    int done = 0;
+
+    for (var item in lista) {
+      if (item['ok']) {
+        done++;
+      }
+    }
+
+    info['done'] = done;
+
+    info['open'] = info['qtd'] - info['done'];
+
+    return info;
+  }
+
   Widget _buildLine(int index) {
     return ListTile(
       leading: CircleAvatar(backgroundImage: AssetImage("images/list.png")),
       title: Text(_controllerDataJson.toDoList[index]["title"]),
-      subtitle: Text('A strong animal'),
+      subtitle: _buildSubTitle(index),
       trailing: Icon(Icons.keyboard_arrow_right),
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => SecondRoute(index)),
-        );
+        ).whenComplete(() => {setState(() {})});
       },
       selected: true,
     );
